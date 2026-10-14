@@ -171,6 +171,10 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       </ol>
       </div>
 
+      <div class="progress" aria-hidden="true">
+        <span class="progress-fill"></span>
+      </div>
+
       <div class="container">
         <div class="dots" role="tablist" aria-label="Elegir captura">
           {visible.map((s, i) => (
@@ -184,6 +188,17 @@ const copies = [-1, 0, 1].flatMap((copy) =>
           ))}
         </div>
       </div>
+
+    <dialog class="lightbox" aria-label="Vista ampliada">
+      <button
+        type="button"
+        class="lightbox-close"
+        aria-label="Cerrar vista ampliada"
+      >
+        <i class="ph ph-x" aria-hidden="true" />
+      </button>
+      <div class="lightbox-content"></div>
+    </dialog>
     </section>
   )
 }
@@ -429,147 +444,480 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       transition: none;
     }
   }
+
+  .progress {
+    width: min(100% - 2 * var(--gutter), 760px);
+    height: 3px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 3px;
+    background: var(--n-800);
+  }
+  
+  .progress-fill {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: var(--accent);
+    border-radius: inherit;
+    transition: width 5s linear;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .progress-fill {
+      transition: none;
+    }
+  }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: clamp(20px, 5vw, 64px);
+  border: 0;
+  background: transparent;
+  color: var(--n-100);
+  overflow: auto;
+}
+
+.lightbox[open] {
+  display: grid;
+  place-items: center;
+}
+
+.lightbox::backdrop {
+  background: rgb(0 0 0 / 82%);
+  backdrop-filter: blur(8px);
+}
+
+.lightbox-content {
+  width: 100%;
+  max-width: 1400px;
+  margin: auto;
+}
+
+.lightbox-content figure {
+  width: 100%;
+}
+
+.lightbox-content img,
+.lightbox-content .domains {
+  width: 100%;
+  max-height: 78vh;
+  aspect-ratio: auto;
+  object-fit: contain;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.lightbox-content img {
+  display: block;
+  height: auto;
+  margin-inline: auto;
+}
+
+.lightbox-content figcaption {
+  max-width: 70ch;
+  margin: 24px auto 0;
+}
+
+.lightbox-content figcaption h3 {
+  font-size: clamp(20px, 3vw, 28px);
+}
+
+.lightbox-content figcaption p {
+  font-size: 16px;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--n-700);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--n-100);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.lightbox-close:hover {
+  border-color: var(--accent);
+  color: var(--a-200);
+}
+
+.slide:not([inert]) {
+  cursor: zoom-in;
+}
+
+.lightbox[open] {
+  cursor: zoom-out;
+}
+
+@media (max-width: 767px) {
+  .lightbox {
+    padding: 64px 16px 24px;
+  }
+
+  .lightbox-content img,
+  .lightbox-content .domains {
+    max-height: 65vh;
+  }
+}
 </style>
 
+
 <script>
-  // Carrusel infinito. Estado único: `pos`, el índice dentro de la pista con tres copias.
-  // Flechas, puntos, teclado y arrastre solo cambian `pos`; al terminar la transición, si quedó
-  // sobre una copia, se salta sin animación a la lámina real equivalente.
   const root = document.querySelector<HTMLElement>("#asi-se-ve");
+
   if (root) {
     const track = root.querySelector<HTMLElement>(".track")!;
     const slides = [...track.querySelectorAll<HTMLElement>(".slide")];
     const dots = [...root.querySelectorAll<HTMLButtonElement>(".dots button")];
+    const playBtn = root.querySelector<HTMLButtonElement>(".play")!;
+    const progressFill = root.querySelector<HTMLElement>(".progress-fill")!;
+    const lightbox = root.querySelector<HTMLDialogElement>(".lightbox")!;
+    const lightboxContent =
+      lightbox.querySelector<HTMLElement>(".lightbox-content")!;
+    const lightboxClose =
+      lightbox.querySelector<HTMLButtonElement>(".lightbox-close")!;
+
     const n = dots.length;
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let pos = n; // primera lámina real
-    let step = 0; // ancho de lámina + separación, en px
-
-    const measure = () => {
-      step = slides[1].offsetLeft - slides[0].offsetLeft; // offsetLeft ignora el scale
-    };
-    const offset = (extra = 0) => track.style.setProperty("--x", `${-pos * step + extra}px`);
-
-    const paint = () => {
-      const real = ((pos % n) + n) % n;
-      slides.forEach((s, j) => s.classList.toggle("is-active", j === pos));
-      dots.forEach((d, j) => d.setAttribute("aria-selected", String(j === real)));
-    };
-
-    // Vuelve a la copia real sin que se note.
-    const normalize = () => {
-      if (pos >= n && pos < 2 * n) return;
-      pos = ((pos % n) + n) % n + n;
-      track.classList.add("jump");
-      offset();
-      paint();
-      void track.offsetWidth; // aplica el salto antes de reactivar las transiciones
-      track.classList.remove("jump");
-    };
-
-    const go = (target: number) => {
-      normalize();
-      pos = target;
-      offset();
-      paint();
-      if (reduce) normalize();
-      schedule();
-    };
-
-    // Avance automático cada 5 s, encendido por defecto (decisión del equipo). Se detiene solo con
-    // el botón de pausa (WCAG 2.2.2); además espera mientras se arrastra, y no corre fuera de
-    // pantalla ni con la pestaña oculta. Con prefers-reduced-motion avanza sin animación.
     const DELAY = 5000;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let pos = n;
+    let step = 0;
     let startX = 0;
     let dx = 0;
     let dragging = false;
     let visible = false;
-    let timer = 0;
     let paused = false;
-    const schedule = () => {
-      clearTimeout(timer);
-      if (!paused && !dragging && visible && !document.hidden)
-        timer = window.setTimeout(() => go(pos + 1), DELAY);
+    let lightboxOpen = false;
+    let timer = 0;
+    let clickBlocked = false;
+
+    const measure = () => {
+      if (slides.length < 2) return;
+      step = slides[1].offsetLeft - slides[0].offsetLeft;
     };
-    const playBtn = root.querySelector<HTMLButtonElement>(".play")!;
+
+    const offset = (extra = 0) => {
+      track.style.setProperty("--x", `${-pos * step + extra}px`);
+    };
+
+    const paint = () => {
+      const real = ((pos % n) + n) % n;
+
+      slides.forEach((slide, j) => {
+        slide.classList.toggle("is-active", j === pos);
+      });
+
+      dots.forEach((dot, j) => {
+        dot.setAttribute("aria-selected", String(j === real));
+      });
+    };
+
+    // Salta de las copias auxiliares a la copia central sin animación.
+    const normalize = () => {
+      if (pos >= n && pos < 2 * n) return;
+
+      pos = ((pos % n) + n) % n + n;
+
+      track.classList.add("jump");
+      offset();
+      paint();
+
+      void track.offsetWidth;
+      track.classList.remove("jump");
+    };
+
+    // Gestiona el avance automático y la barra de progreso.
+    const schedule = () => {
+      window.clearTimeout(timer);
+
+      progressFill.style.transition = "none";
+      progressFill.style.width = "0%";
+
+      if (
+        paused ||
+        lightboxOpen ||
+        dragging ||
+        !visible ||
+        document.hidden
+      ) {
+        return;
+      }
+
+      void progressFill.offsetWidth;
+      progressFill.style.transition = "";
+
+      requestAnimationFrame(() => {
+        if (
+          !paused &&
+          !lightboxOpen &&
+          !dragging &&
+          visible &&
+          !document.hidden
+        ) {
+          progressFill.style.width = "100%";
+        }
+      });
+
+      timer = window.setTimeout(() => go(pos + 1), DELAY);
+    };
+
+    const go = (target: number) => {
+      if (n === 0) return;
+
+      normalize();
+      pos = target;
+      offset();
+      paint();
+
+      if (reduce) normalize();
+
+      schedule();
+    };
+
+    // Ampliación de la lámina activa.
+    const openLightbox = (slide: HTMLElement) => {
+      if (lightboxOpen || slide.hasAttribute("inert")) return;
+
+      const figure = slide.querySelector("figure");
+      if (!figure) return;
+
+      lightboxContent.replaceChildren(figure.cloneNode(true));
+
+      const image = lightboxContent.querySelector("img");
+      if (image) {
+        image.removeAttribute("loading");
+        image.removeAttribute("width");
+        image.removeAttribute("height");
+      }
+
+      lightboxOpen = true;
+      window.clearTimeout(timer);
+
+      progressFill.style.transition = "none";
+      progressFill.style.width = "0%";
+
+      lightbox.showModal();
+      lightboxClose.focus();
+    };
+
+    const closeLightbox = () => {
+      if (!lightboxOpen) return;
+
+      lightboxOpen = false;
+      lightbox.close();
+      lightboxContent.replaceChildren();
+
+      // Respeta la pausa manual del usuario.
+      schedule();
+    };
+
+    // Botón de pausa/reanudación.
     playBtn.addEventListener("click", () => {
       paused = !paused;
+
       playBtn.setAttribute("aria-pressed", String(paused));
       playBtn.setAttribute(
         "aria-label",
-        paused ? "Reanudar avance automático" : "Pausar avance automático",
+        paused
+          ? "Reanudar avance automático"
+          : "Pausar avance automático",
       );
-      playBtn.querySelector("i")!.className = `ph ${paused ? "ph-play" : "ph-pause"}`;
-      // En pausa el lector de pantalla vuelve a anunciar cada cambio de lámina.
+
+      playBtn.querySelector("i")!.className =
+        `ph ${paused ? "ph-play" : "ph-pause"}`;
+
       track.setAttribute("aria-live", paused ? "polite" : "off");
+
       schedule();
     });
+
+    // Solo avanza mientras la sección está visible y la pestaña activa.
     document.addEventListener("visibilitychange", schedule);
-    new IntersectionObserver(
-      ([e]) => {
-        visible = e.isIntersecting;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
         schedule();
       },
       { threshold: 0.4 },
-    ).observe(root);
-
-    track.addEventListener("transitionend", (e) => {
-      if (e.target === track && e.propertyName === "transform") normalize();
-    });
-
-    root.querySelectorAll<HTMLButtonElement>(".nav[data-dir]").forEach((b) =>
-      b.addEventListener("click", () => go(pos + Number(b.dataset.dir))),
     );
-    dots.forEach((d, i) => d.addEventListener("click", () => go(n + i)));
-    track.addEventListener("keydown", (e) => {
-      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-      e.preventDefault();
-      go(pos + (e.key === "ArrowRight" ? 1 : -1));
+
+    observer.observe(root);
+
+    // Normaliza el carrusel al acabar la transición.
+    track.addEventListener("transitionend", (event) => {
+      if (
+        event.target === track &&
+        event.propertyName === "transform"
+      ) {
+        normalize();
+      }
     });
 
-    // Arrastre con puntero (mouse y dedo). El scroll vertical sigue libre (touch-action: pan-y).
-    track.addEventListener("pointerdown", (e) => {
-      if (e.button !== 0) return;
+    // Flechas de navegación.
+    root
+      .querySelectorAll<HTMLButtonElement>(".nav[data-dir]")
+      .forEach((button) => {
+        button.addEventListener("click", () => {
+          go(pos + Number(button.dataset.dir));
+        });
+      });
+
+    // Indicadores inferiores.
+    dots.forEach((dot, i) => {
+      dot.addEventListener("click", () => go(n + i));
+    });
+
+    // Navegación por teclado.
+    track.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") {
+        return;
+      }
+
+      event.preventDefault();
+
+      go(pos + (event.key === "ArrowRight" ? 1 : -1));
+    });
+
+    // Arrastre con ratón o pantalla táctil.
+    track.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || lightboxOpen) return;
+
       normalize();
+
       dragging = true;
-      startX = e.clientX;
+      startX = event.clientX;
       dx = 0;
-      track.setPointerCapture(e.pointerId);
+      clickBlocked = false;
+
+      track.setPointerCapture(event.pointerId);
       track.classList.add("dragging");
+
       schedule();
     });
-    track.addEventListener("pointermove", (e) => {
+
+    track.addEventListener("pointermove", (event) => {
       if (!dragging) return;
-      dx = e.clientX - startX;
+
+      dx = event.clientX - startX;
+
+      if (Math.abs(dx) > 5) {
+        clickBlocked = true;
+      }
+
       offset(dx);
     });
+
     const release = () => {
       if (!dragging) return;
+
+      const distance = dx;
+      const moved = Math.abs(distance) > Math.min(80, step * 0.15);
+
       dragging = false;
       track.classList.remove("dragging");
-      const moved = Math.abs(dx) > Math.min(80, step * 0.15);
-      go(moved ? pos - Math.sign(dx) * Math.max(1, Math.round(Math.abs(dx) / step)) : pos);
+
+      if (moved) {
+        go(
+          pos -
+            Math.sign(distance) *
+              Math.max(1, Math.round(Math.abs(distance) / step)),
+        );
+      } else {
+        offset();
+        schedule();
+      }
+
+      dx = 0;
     };
+
     track.addEventListener("pointerup", release);
     track.addEventListener("pointercancel", release);
 
-    // Una lámina a medio arrastrar tampoco se abre como enlace o imagen.
-    track.addEventListener("click", (e) => {
-      if (Math.abs(dx) > 5) e.preventDefault();
-    }, true);
+    // Impide que el final de un arrastre abra accidentalmente una lámina.
+    track.addEventListener(
+      "click",
+      (event) => {
+        if (clickBlocked) {
+          event.preventDefault();
+          event.stopPropagation();
+          clickBlocked = false;
+        }
+      },
+      true,
+    );
 
-    new ResizeObserver(() => {
+    // Ampliar únicamente la lámina activa, nunca sus copias auxiliares.
+    slides.forEach((slide, j) => {
+      slide.addEventListener("click", () => {
+        if (clickBlocked || dragging || slide.hasAttribute("inert")) {
+          return;
+        }
+
+        const real = ((j % n) + n) % n;
+        const active = ((pos % n) + n) % n;
+
+        if (real !== active) return;
+
+        openLightbox(slide);
+      });
+    });
+
+    // Cierre mediante botón, clic en el fondo o Escape.
+    lightboxClose.addEventListener("click", closeLightbox);
+
+    lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) {
+        closeLightbox();
+      }
+    });
+
+    lightbox.addEventListener("cancel", () => {
+      closeLightbox();
+    });
+
+    lightbox.addEventListener("close", () => {
+      if (lightboxOpen) {
+        lightboxOpen = false;
+        lightboxContent.replaceChildren();
+        schedule();
+      }
+    });
+
+    // Recalcula las dimensiones cuando cambia el viewport.
+    const resizeObserver = new ResizeObserver(() => {
       measure();
+
       track.classList.add("jump");
       offset();
+
       void track.offsetWidth;
       track.classList.remove("jump");
-    }).observe(track);
+    });
 
+    resizeObserver.observe(track);
+
+    // Inicialización.
     measure();
     track.classList.add("jump");
     offset();
     paint();
+
     void track.offsetWidth;
     track.classList.remove("jump");
   }
