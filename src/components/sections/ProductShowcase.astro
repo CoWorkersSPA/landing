@@ -101,9 +101,6 @@ const copies = [-1, 0, 1].flatMap((copy) =>
             Así se ve lo que <span class="text-glow">instalamos</span>.
           </h2>
           <div class="controls reveal" data-delay="1">
-            <span class="count" aria-hidden="true">
-              <span class="count-now">01</span> / {String(visible.length).padStart(2, "0")}
-            </span>
             <button type="button" class="nav play" aria-label="Pausar avance automático" aria-pressed="false">
               <i class="ph ph-pause" aria-hidden="true" />
             </button>
@@ -174,10 +171,6 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       </ol>
       </div>
 
-      <div class="progress" aria-hidden="true">
-        <span class="progress-fill"></span>
-      </div>
-
       <div class="container">
         <div class="dots" role="tablist" aria-label="Elegir captura">
           {visible.map((s, i) => (
@@ -187,7 +180,9 @@ const copies = [-1, 0, 1].flatMap((copy) =>
               aria-label={s.title}
               aria-selected={i === 0 ? "true" : "false"}
               data-index={i}
-            />
+            >
+              {i === 0 && <span class="progress-fill" aria-hidden="true" />}
+            </button>
           ))}
         </div>
       </div>
@@ -199,6 +194,12 @@ const copies = [-1, 0, 1].flatMap((copy) =>
         aria-label="Cerrar vista ampliada"
       >
         <i class="ph ph-x" aria-hidden="true" />
+      </button>
+      <button type="button" class="lightbox-nav prev" data-step="-1" aria-label="Anterior">
+        <i class="ph ph-arrow-left" aria-hidden="true" />
+      </button>
+      <button type="button" class="lightbox-nav next" data-step="1" aria-label="Siguiente">
+        <i class="ph ph-arrow-right" aria-hidden="true" />
       </button>
       <div class="lightbox-content"></div>
     </dialog>
@@ -228,19 +229,8 @@ const copies = [-1, 0, 1].flatMap((copy) =>
   }
   .controls {
     display: flex;
-    align-items: center;
     gap: 10px;
     flex: none;
-  }
-  .count {
-    margin-right: 8px;
-    color: var(--n-500);
-    font-size: 14px;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
-  }
-  .count-now {
-    color: var(--n-200);
   }
   .nav {
     display: grid;
@@ -422,6 +412,7 @@ const copies = [-1, 0, 1].flatMap((copy) =>
 
   .dots {
     display: flex;
+    align-items: center;
     gap: 8px;
     margin-top: 8px;
   }
@@ -445,8 +436,9 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     inset: -12px -2px;
   }
   .dots button[aria-selected="true"] {
-    width: 48px;
-    background: var(--accent);
+    width: 64px;
+    overflow: hidden;
+    background: var(--n-700);
   }
 
   @media (max-width: 767px) {
@@ -466,19 +458,11 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     }
   }
 
-  .progress {
-    width: min(100% - 2 * var(--gutter), 760px);
-    height: 3px;
-    margin: 0 auto;
-    overflow: hidden;
-    border-radius: 3px;
-    background: var(--n-800);
-  }
-  
+  /* El progreso vive dentro del punto activo: se llena hasta el siguiente avance. */
   .progress-fill {
+    position: absolute;
+    inset: 0;
     display: block;
-    width: 100%;
-    height: 100%;
     background: var(--accent);
     border-radius: inherit;
     transform: scaleX(0);
@@ -580,7 +564,41 @@ const copies = [-1, 0, 1].flatMap((copy) =>
   cursor: pointer;
 }
 
-.lightbox-close:hover {
+.lightbox-nav {
+  position: fixed;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  border: 1px solid var(--n-700);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--n-100);
+  font-size: 18px;
+  cursor: pointer;
+  transition:
+    border-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+
+.lightbox-nav.prev {
+  left: 20px;
+}
+
+.lightbox-nav.next {
+  right: 20px;
+}
+
+.lightbox-nav:hover {
+  border-color: var(--accent);
+  color: var(--a-200);
+}
+
+.lightbox-close:hover,
+.lightbox-close:focus-visible {
   border-color: var(--accent);
   color: var(--a-200);
 }
@@ -596,6 +614,13 @@ const copies = [-1, 0, 1].flatMap((copy) =>
 @media (max-width: 767px) {
   .lightbox {
     padding: 64px 16px 24px;
+  }
+
+  /* En móvil las flechas bajan junto al texto para no tapar la captura. */
+  .lightbox-nav {
+    top: auto;
+    bottom: 20px;
+    margin-top: 0;
   }
 
   .lightbox-content img,
@@ -636,7 +661,6 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     let timer = 0;
     let clickBlocked = false;
     let hovering = false;
-    const countNow = root.querySelector<HTMLElement>(".count-now");
 
     // Quien pide menos movimiento no recibe avance automático.
     const canRun = () =>
@@ -668,7 +692,7 @@ const copies = [-1, 0, 1].flatMap((copy) =>
         dot.setAttribute("aria-selected", String(j === real));
       });
 
-      if (countNow) countNow.textContent = String(real + 1).padStart(2, "0");
+      dots[real].appendChild(progressFill);
     };
 
     // Salta de las copias auxiliares a la copia central sin animación.
@@ -718,9 +742,7 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     };
 
     // Ampliación de la lámina activa.
-    const openLightbox = (slide: HTMLElement) => {
-      if (lightboxOpen || slide.hasAttribute("inert")) return;
-
+    const fillLightbox = (slide: HTMLElement) => {
       const figure = slide.querySelector("figure");
       if (!figure) return;
 
@@ -732,6 +754,12 @@ const copies = [-1, 0, 1].flatMap((copy) =>
         image.removeAttribute("width");
         image.removeAttribute("height");
       }
+    };
+
+    const openLightbox = (slide: HTMLElement) => {
+      if (lightboxOpen || slide.hasAttribute("inert")) return;
+
+      fillLightbox(slide);
 
       lightboxOpen = true;
       window.clearTimeout(timer);
@@ -742,6 +770,28 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       lightbox.showModal();
       lightboxClose.focus();
     };
+
+    // Cambia de lámina dentro de la vista ampliada; el carrusel de fondo la sigue.
+    const stepLightbox = (dir: number) => {
+      go(pos + dir);
+      fillLightbox(slides[(((pos % n) + n) % n) + n]);
+    };
+
+    lightbox
+      .querySelectorAll<HTMLButtonElement>(".lightbox-nav")
+      .forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          stepLightbox(Number(button.dataset.step));
+        });
+      });
+
+    lightbox.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
+      event.preventDefault();
+      stepLightbox(event.key === "ArrowRight" ? 1 : -1);
+    });
 
     const closeLightbox = () => {
       if (!lightboxOpen) return;
@@ -843,35 +893,42 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     });
 
     // Arrastre con ratón o pantalla táctil.
+    // El arrastre empieza al superar 5 px: un clic simple no captura el puntero (si no, el
+    // click llegaría a la pista y no a la lámina) ni reinicia el avance automático.
+    let pressed = false;
+    let pointerId = 0;
+
     track.addEventListener("pointerdown", (event) => {
       if (event.button !== 0 || lightboxOpen) return;
 
-      normalize();
-
-      dragging = true;
+      pressed = true;
+      pointerId = event.pointerId;
       startX = event.clientX;
       dx = 0;
       clickBlocked = false;
-
-      track.setPointerCapture(event.pointerId);
-      track.classList.add("dragging");
-
-      schedule();
     });
 
     track.addEventListener("pointermove", (event) => {
-      if (!dragging) return;
+      if (!pressed) return;
 
       dx = event.clientX - startX;
 
-      if (Math.abs(dx) > 5) {
+      if (!dragging) {
+        if (Math.abs(dx) <= 5) return;
+
+        normalize();
+        dragging = true;
         clickBlocked = true;
+        track.setPointerCapture(pointerId);
+        track.classList.add("dragging");
+        schedule();
       }
 
       offset(dx);
     });
 
     const release = () => {
+      pressed = false;
       if (!dragging) return;
 
       const distance = dx;
