@@ -709,23 +709,46 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       track.classList.remove("jump");
     };
 
-    // Gestiona el avance automático y la barra de progreso.
-    const schedule = () => {
-      window.clearTimeout(timer);
+    // Gestiona el avance automático y la barra de progreso. Una pausa (hover, pausa manual,
+    // pestaña oculta) congela la barra y el tiempo restante; solo un cambio de lámina la reinicia.
+    let startedAt = 0;
+    let remaining = DELAY;
+    let running = false;
 
+    const freeze = () => {
+      if (!running) return;
+
+      running = false;
+      window.clearTimeout(timer);
+      remaining = Math.max(0, remaining - (performance.now() - startedAt));
+
+      const current = getComputedStyle(progressFill).transform;
       progressFill.style.transition = "none";
-      progressFill.style.transform = "scaleX(0)";
+      progressFill.style.transform = current;
+    };
+
+    const schedule = (fresh = true) => {
+      freeze();
+
+      if (fresh) {
+        remaining = DELAY;
+        progressFill.style.transition = "none";
+        progressFill.style.transform = "scaleX(0)";
+      }
 
       if (!canRun()) return;
 
+      running = true;
+      startedAt = performance.now();
+
       void progressFill.offsetWidth;
-      progressFill.style.transition = "";
+      progressFill.style.transition = `transform ${remaining}ms linear`;
 
       requestAnimationFrame(() => {
-        if (canRun()) progressFill.style.transform = "scaleX(1)";
+        if (running) progressFill.style.transform = "scaleX(1)";
       });
 
-      timer = window.setTimeout(() => go(pos + 1), DELAY);
+      timer = window.setTimeout(() => go(pos + 1), remaining);
     };
 
     const go = (target: number) => {
@@ -762,10 +785,7 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       fillLightbox(slide);
 
       lightboxOpen = true;
-      window.clearTimeout(timer);
-
-      progressFill.style.transition = "none";
-      progressFill.style.transform = "scaleX(0)";
+      schedule();
 
       lightbox.showModal();
       lightboxClose.focus();
@@ -810,12 +830,12 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     viewport.addEventListener("pointerenter", (event) => {
       if (event.pointerType !== "mouse") return;
       hovering = true;
-      schedule();
+      schedule(false);
     });
     viewport.addEventListener("pointerleave", () => {
       if (!hovering) return;
       hovering = false;
-      schedule();
+      schedule(false);
     });
 
     // Botón de pausa/reanudación.
@@ -835,16 +855,16 @@ const copies = [-1, 0, 1].flatMap((copy) =>
 
       track.setAttribute("aria-live", paused ? "polite" : "off");
 
-      schedule();
+      schedule(false);
     });
 
     // Solo avanza mientras la sección está visible y la pestaña activa.
-    document.addEventListener("visibilitychange", schedule);
+    document.addEventListener("visibilitychange", () => schedule(false));
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
-        schedule();
+        schedule(false);
       },
       { threshold: 0.4 },
     );
