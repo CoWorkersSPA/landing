@@ -42,12 +42,11 @@ import Button from "@components/ui/Button.astro";
         recogemos tu correo y lo que pongas en el mensaje.
       </p>
       <p>
-        Cuando envías el formulario, nuestro servidor ve tu dirección IP durante
-        el envío y la conserva como máximo un minuto en memoria, solo para
-        impedir que un programa automático mande cientos de mensajes seguidos.
-        No la guardamos, no la asociamos a tu nombre y no queda en ningún
-        registro después de ese minuto. No usamos captchas ni ningún otro
-        servicio externo para filtrar los envíos.
+        Cuando envías el formulario, nuestra aplicación procesa temporalmente 
+        tu dirección IP para limitar los envíos automatizados. No la almacenamos
+        en nuestra base de datos ni la asociamos a tu nombre. La infraestructura
+        que presta el servicio puede generar sus propios registros técnicos, 
+        sujetos a las condiciones de conservación de cada proveedor.
       </p>
 
       <h2>Para qué los usamos</h2>
@@ -68,14 +67,24 @@ import Button from "@components/ui/Button.astro";
 
       <h2>Con quién los compartimos</h2>
       <p>
-        Con nadie con fines comerciales ni publicitarios. Tu correo y lo que
-        envías por el formulario pueden pasar por Cloudflare (Cloudflare, Inc.,
-        con sede en San Francisco, Estados Unidos), por Vercel (Vercel Inc., con
-        sede en San Francisco, Estados Unidos), que aloja este sitio y procesa
-        el envío del formulario, y por Brevo (Sendinblue SAS, con sede en París,
-        Francia), que nos entrega el correo. Los tres son encargados del
-        tratamiento: procesan los datos por nuestra instrucción, no los usan
-        para sus propios fines.
+        Con nadie con fines comerciales ni publicitarios. Para operar este sitio y 
+        gestionar las comunicaciones por correo electrónico, utilizamos proveedores 
+        tecnológicos que pueden tratar los datos necesarios para prestar sus servicios.
+
+        Los datos enviados mediante el formulario pueden ser procesados por Vercel 
+        (Vercel Inc., con sede en Estados Unidos), que aloja este sitio y ejecuta el 
+        procesamiento del formulario, y por Brevo (Sendinblue SAS, con sede en Francia), 
+        que utilizamos para gestionar el correo electrónico.
+
+        También utilizamos Cloudflare (Cloudflare, Inc., con sede en Estados Unidos) 
+        para gestionar el correo electrónico del dominio. En este proceso, Cloudflare puede 
+        tratar metadatos asociados a los mensajes, como las direcciones del remitente y 
+        del destinatario, el asunto y la información de entrega, así como registros técnicos 
+        necesarios para prestar el servicio y diagnosticar incidencias.
+
+        Estos proveedores intervienen en función de los servicios que tenemos configurados 
+        y de las condiciones aplicables a cada uno. No vendemos tus datos ni los compartimos 
+        con terceros para fines comerciales o publicitarios.
       </p>
       <p>No hay más terceros involucrados.</p>
 
