@@ -101,6 +101,9 @@ const copies = [-1, 0, 1].flatMap((copy) =>
             Así se ve lo que <span class="text-glow">instalamos</span>.
           </h2>
           <div class="controls reveal" data-delay="1">
+            <span class="count" aria-hidden="true">
+              <span class="count-now">01</span> / {String(visible.length).padStart(2, "0")}
+            </span>
             <button type="button" class="nav play" aria-label="Pausar avance automático" aria-pressed="false">
               <i class="ph ph-pause" aria-hidden="true" />
             </button>
@@ -225,8 +228,19 @@ const copies = [-1, 0, 1].flatMap((copy) =>
   }
   .controls {
     display: flex;
+    align-items: center;
     gap: 10px;
     flex: none;
+  }
+  .count {
+    margin-right: 8px;
+    color: var(--n-500);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .count-now {
+    color: var(--n-200);
   }
   .nav {
     display: grid;
@@ -412,6 +426,7 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     margin-top: 8px;
   }
   .dots button {
+    position: relative;
     width: 28px;
     height: 4px;
     padding: 0;
@@ -422,6 +437,12 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     transition:
       background-color 0.4s var(--ease),
       width 0.4s var(--ease);
+  }
+  /* Área de toque ampliada sin engordar la barra. */
+  .dots button::before {
+    content: "";
+    position: absolute;
+    inset: -12px -2px;
   }
   .dots button[aria-selected="true"] {
     width: 48px;
@@ -456,11 +477,13 @@ const copies = [-1, 0, 1].flatMap((copy) =>
   
   .progress-fill {
     display: block;
-    width: 0;
+    width: 100%;
     height: 100%;
     background: var(--accent);
     border-radius: inherit;
-    transition: width 5s linear;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 5s linear;
   }
   
   @media (prefers-reduced-motion: reduce) {
@@ -518,6 +541,13 @@ const copies = [-1, 0, 1].flatMap((copy) =>
   display: block;
   height: auto;
   margin-inline: auto;
+}
+
+/* El clon no cuelga de .slide.is-active: sin esto las direcciones quedarían tenues y desplazadas. */
+.lightbox-content .domains li {
+  opacity: 1;
+  transform: none;
+  transition: none;
 }
 
 .lightbox-content figcaption {
@@ -605,6 +635,18 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     let lightboxOpen = false;
     let timer = 0;
     let clickBlocked = false;
+    let hovering = false;
+    const countNow = root.querySelector<HTMLElement>(".count-now");
+
+    // Quien pide menos movimiento no recibe avance automático.
+    const canRun = () =>
+      !reduce &&
+      !paused &&
+      !lightboxOpen &&
+      !dragging &&
+      !hovering &&
+      visible &&
+      !document.hidden;
 
     const measure = () => {
       if (slides.length < 2) return;
@@ -625,6 +667,8 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       dots.forEach((dot, j) => {
         dot.setAttribute("aria-selected", String(j === real));
       });
+
+      if (countNow) countNow.textContent = String(real + 1).padStart(2, "0");
     };
 
     // Salta de las copias auxiliares a la copia central sin animación.
@@ -646,31 +690,15 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       window.clearTimeout(timer);
 
       progressFill.style.transition = "none";
-      progressFill.style.width = "0%";
+      progressFill.style.transform = "scaleX(0)";
 
-      if (
-        paused ||
-        lightboxOpen ||
-        dragging ||
-        !visible ||
-        document.hidden
-      ) {
-        return;
-      }
+      if (!canRun()) return;
 
       void progressFill.offsetWidth;
       progressFill.style.transition = "";
 
       requestAnimationFrame(() => {
-        if (
-          !paused &&
-          !lightboxOpen &&
-          !dragging &&
-          visible &&
-          !document.hidden
-        ) {
-          progressFill.style.width = "100%";
-        }
+        if (canRun()) progressFill.style.transform = "scaleX(1)";
       });
 
       timer = window.setTimeout(() => go(pos + 1), DELAY);
@@ -709,7 +737,7 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       window.clearTimeout(timer);
 
       progressFill.style.transition = "none";
-      progressFill.style.width = "0%";
+      progressFill.style.transform = "scaleX(0)";
 
       lightbox.showModal();
       lightboxClose.focus();
@@ -721,10 +749,24 @@ const copies = [-1, 0, 1].flatMap((copy) =>
       lightboxOpen = false;
       lightbox.close();
       lightboxContent.replaceChildren();
+      track.focus({ preventScroll: true });
 
       // Respeta la pausa manual del usuario.
       schedule();
     };
+
+    // Pausa mientras el puntero (fino) está sobre el carrusel o el foco está dentro.
+    const viewport = root.querySelector<HTMLElement>(".viewport")!;
+    viewport.addEventListener("pointerenter", (event) => {
+      if (event.pointerType !== "mouse") return;
+      hovering = true;
+      schedule();
+    });
+    viewport.addEventListener("pointerleave", () => {
+      if (!hovering) return;
+      hovering = false;
+      schedule();
+    });
 
     // Botón de pausa/reanudación.
     playBtn.addEventListener("click", () => {
@@ -785,6 +827,12 @@ const copies = [-1, 0, 1].flatMap((copy) =>
 
     // Navegación por teclado.
     track.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        if (slides[pos]) openLightbox(slides[pos]);
+        return;
+      }
+
       if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") {
         return;
       }
@@ -869,10 +917,11 @@ const copies = [-1, 0, 1].flatMap((copy) =>
           return;
         }
 
-        const real = ((j % n) + n) % n;
-        const active = ((pos % n) + n) % n;
-
-        if (real !== active) return;
+        // Una lámina vecina no se amplía: primero se trae al frente.
+        if (j !== pos) {
+          go(j);
+          return;
+        }
 
         openLightbox(slide);
       });
