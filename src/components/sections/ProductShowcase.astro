@@ -101,9 +101,6 @@ const copies = [-1, 0, 1].flatMap((copy) =>
             Así se ve lo que <span class="text-glow">instalamos</span>.
           </h2>
           <div class="controls reveal" data-delay="1">
-            <span class="count" aria-hidden="true">
-              <span class="count-now">01</span> / {String(visible.length).padStart(2, "0")}
-            </span>
             <button type="button" class="nav play" aria-label="Pausar avance automático" aria-pressed="false">
               <i class="ph ph-pause" aria-hidden="true" />
             </button>
@@ -189,6 +186,9 @@ const copies = [-1, 0, 1].flatMap((copy) =>
               data-index={i}
             />
           ))}
+          <span class="count" aria-hidden="true">
+            <span class="count-now">01</span> / {String(visible.length).padStart(2, "0")}
+          </span>
         </div>
       </div>
 
@@ -228,12 +228,11 @@ const copies = [-1, 0, 1].flatMap((copy) =>
   }
   .controls {
     display: flex;
-    align-items: center;
     gap: 10px;
     flex: none;
   }
   .count {
-    margin-right: 8px;
+    margin-left: 12px;
     color: var(--n-500);
     font-size: 14px;
     font-variant-numeric: tabular-nums;
@@ -422,6 +421,7 @@ const copies = [-1, 0, 1].flatMap((copy) =>
 
   .dots {
     display: flex;
+    align-items: center;
     gap: 8px;
     margin-top: 8px;
   }
@@ -843,35 +843,42 @@ const copies = [-1, 0, 1].flatMap((copy) =>
     });
 
     // Arrastre con ratón o pantalla táctil.
+    // El arrastre empieza al superar 5 px: un clic simple no captura el puntero (si no, el
+    // click llegaría a la pista y no a la lámina) ni reinicia el avance automático.
+    let pressed = false;
+    let pointerId = 0;
+
     track.addEventListener("pointerdown", (event) => {
       if (event.button !== 0 || lightboxOpen) return;
 
-      normalize();
-
-      dragging = true;
+      pressed = true;
+      pointerId = event.pointerId;
       startX = event.clientX;
       dx = 0;
       clickBlocked = false;
-
-      track.setPointerCapture(event.pointerId);
-      track.classList.add("dragging");
-
-      schedule();
     });
 
     track.addEventListener("pointermove", (event) => {
-      if (!dragging) return;
+      if (!pressed) return;
 
       dx = event.clientX - startX;
 
-      if (Math.abs(dx) > 5) {
+      if (!dragging) {
+        if (Math.abs(dx) <= 5) return;
+
+        normalize();
+        dragging = true;
         clickBlocked = true;
+        track.setPointerCapture(pointerId);
+        track.classList.add("dragging");
+        schedule();
       }
 
       offset(dx);
     });
 
     const release = () => {
+      pressed = false;
       if (!dragging) return;
 
       const distance = dx;
