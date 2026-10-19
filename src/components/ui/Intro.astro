@@ -6,7 +6,6 @@
 // espera. Si se alarga otra vez, se paga en rebote de tráfico frío.
 // Se activa solo si <html> lleva data-intro (lo decide un script inline en Layout.astro:
 // una vez por sesión y nunca con prefers-reduced-motion). Sin el atributo no existe.
-import Wordmark from "@components/ui/Wordmark.astro";
 ---
 
 <div class="intro" id="intro" aria-hidden="true">
@@ -14,7 +13,15 @@ import Wordmark from "@components/ui/Wordmark.astro";
   <span class="intro-aurora intro-aurora-b"></span>
   <span class="intro-dots"></span>
   <div class="intro-inner">
-    <Wordmark height={44} />
+    <img
+      src="/coworkers_logo_vector.svg"
+      alt="Coworkers"
+      class="intro-logo"
+      width="220"
+      height="44"
+      loading="eager"
+      decoding="async"
+    />
     <p>Software que se entiende.</p>
   </div>
 </div>
@@ -122,9 +129,15 @@ import Wordmark from "@components/ui/Wordmark.astro";
       intro-in 0.3s var(--ease) 0.05s forwards,
       intro-out 0.2s var(--ease) 0.3s forwards;
   }
-  .intro-inner :global(svg) {
+  .intro-logo {
     height: 44px;
     width: auto;
+    filter: none;
+    transition: filter 0.3s ease;
+  }
+  :global([data-theme="light"]) .intro-logo {
+    /* Igual que .brand-logo en Header.astro: blanco → Dark Blue #12141e */
+    filter: invert(1) hue-rotate(220deg) brightness(0.12) saturate(2);
   }
   .intro-inner p {
     margin: 0;
@@ -172,8 +185,8 @@ import Wordmark from "@components/ui/Wordmark.astro";
   }
 
   @media (max-width: 767px) {
-    .intro-inner :global(svg) {
-      height: 36px;
+    .intro-logo {
+      height: 32px;
     }
   }
 </style>
