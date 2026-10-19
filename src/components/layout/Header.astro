@@ -2,7 +2,6 @@
 // src/components/layout/Header.astro
 import Button from "@components/ui/Button.astro";
 import ThemeToggle from "@components/ui/ThemeToggle.astro";
-import Wordmark from "@components/ui/Wordmark.astro";
 
 const navLinks = [
   { label: "La ley de datos", href: "/#nos-llaman-cuando" },
@@ -21,7 +20,15 @@ const { hide = false } = Astro.props;
 <header class="nav" id="site-nav">
   <div class="container">
     <a class="brand" href="/" aria-label="coworkers.cl, inicio">
-      <Wordmark height={30} />
+      <img
+        src="/coworkers_logo_vector.svg"
+        alt="Coworkers"
+        class="brand-logo"
+        width="160"
+        height="30"
+        loading="eager"
+        decoding="async"
+      />
     </a>
 
     {!hide && (
@@ -94,9 +101,16 @@ const { hide = false } = Astro.props;
     display: inline-flex;
     align-items: center;
   }
-  .brand :global(svg) {
-    height: 26px;
+  .brand-logo {
+    height: 22px;
     width: auto;
+    /* El SVG tiene fill blanco: en oscuro es perfecto; en claro se invierte a índigo oscuro */
+    filter: none;
+    transition: filter 0.3s ease;
+  }
+  :global([data-theme="light"]) .brand-logo {
+    /* invert() + hue-rotate lleva el blanco a #12141e (Dark Blue de la identidad) */
+    filter: invert(1) hue-rotate(220deg) brightness(0.12) saturate(2);
   }
   .nav-links {
     display: flex;
