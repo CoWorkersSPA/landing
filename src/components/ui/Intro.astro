@@ -1,7 +1,7 @@
 ---
 // src/components/ui/Intro.astro
 // Apertura: telón índigo con grano que muestra el wordmark y se levanta para revelar el hero.
-// Dura 0,75 s en total (antes 2,45 s). Es lo único que se interpone entre una visita nueva y la
+// Dura 0,75 s × --k en total (con --k: 1.6 ≈ 1,2 s). Es lo único que se interpone entre una visita nueva y la
 // propuesta de valor, así que el presupuesto es corto a propósito: se lee como apertura, no como
 // espera. Si se alarga otra vez, se paga en rebote de tráfico frío.
 // Se activa solo si <html> lleva data-intro (lo decide un script inline en Layout.astro:
@@ -35,6 +35,8 @@
   }
 
   .intro {
+    /* Multiplicador de tiempo: 1 = 0,75 s · 1.6 ≈ 1,2 s · 2 = 1,5 s */
+    --k: 1.6;
     position: fixed;
     inset: 0;
     z-index: var(--z-intro);
@@ -44,7 +46,8 @@
     overflow: hidden;
     isolation: isolate;
     clip-path: inset(0 0 0 0);
-    animation: intro-lift 0.4s cubic-bezier(0.76, 0, 0.24, 1) 0.35s forwards;
+    animation: intro-lift calc(0.4s * var(--k)) cubic-bezier(0.76, 0, 0.24, 1)
+      calc(0.35s * var(--k)) forwards;
   }
   .intro::after {
     /* el mismo grano de la página, más presente: el telón es materia, no un plano */
@@ -78,7 +81,7 @@
       color-mix(in srgb, var(--section-ghost) 40%, transparent) 55%,
       transparent 100%
     );
-    animation: intro-aurora 0.75s ease-out both;
+    animation: intro-aurora calc(0.75s * var(--k)) ease-out both;
   }
   .intro-aurora-b {
     width: 60vw;
@@ -91,7 +94,7 @@
       color-mix(in srgb, var(--coral) 16%, transparent) 55%,
       transparent 100%
     );
-    animation: intro-aurora 0.75s ease-out 0.05s both;
+    animation: intro-aurora calc(0.75s * var(--k)) ease-out calc(0.05s * var(--k)) both;
   }
   .intro-dots {
     /* partículas: puntos de acento dispersos que suben lentamente */
@@ -116,7 +119,7 @@
       40px 60px,
       120px 20px;
     opacity: 0.55;
-    animation: intro-dots 0.75s linear both;
+    animation: intro-dots calc(0.75s * var(--k)) linear both;
   }
   .intro-inner {
     display: grid;
@@ -126,8 +129,8 @@
     transform: translateY(14px);
     filter: blur(8px);
     animation:
-      intro-in 0.3s var(--ease) 0.05s forwards,
-      intro-out 0.2s var(--ease) 0.3s forwards;
+      intro-in calc(0.3s * var(--k)) var(--ease) calc(0.05s * var(--k)) forwards,
+      intro-out calc(0.2s * var(--k)) var(--ease) calc(0.3s * var(--k)) forwards;
   }
   .intro-logo {
     height: 44px;
@@ -207,7 +210,7 @@
     intro.addEventListener("animationend", (e) => {
       if (e.animationName === "intro-lift") done();
     });
-    setTimeout(done, 1200); // respaldo por si el evento no llega
+    setTimeout(done, 2500); // respaldo: debe ser mayor que 0,75 s × --k
   } else {
     intro?.remove();
   }
