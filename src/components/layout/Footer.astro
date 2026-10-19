@@ -24,7 +24,17 @@ const { hide = false } = Astro.props;
   </div>
   <div class="container grid">
     <div>
-      <Wordmark height={24} />
+      <a class="brand" href="/" aria-label="coworkers.cl, inicio">
+        <img
+          src="/coworkers_logo_vector.svg"
+          alt="Coworkers"
+          class="brand-logo"
+          width="160"
+          height="30"
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
       <p class="tag">Software que se entiende.</p>
     </div>
     {!hide && (
@@ -87,6 +97,10 @@ const { hide = false } = Astro.props;
     align-items: start;
     padding-top: 40px;
   }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+  }
   .tag {
     margin-top: 12px;
     color: var(--n-400);
@@ -114,5 +128,20 @@ const { hide = false } = Astro.props;
     .grid {
       grid-template-columns: 1fr;
     }
+  }
+</style>
+
+<!-- Logo: global a propósito, para que no dependa del scoping de Astro -->
+<style is:global>
+  .footer .brand-logo {
+    height: 24px;
+    width: auto;
+    /* El SVG tiene fill blanco: en oscuro se ve tal cual */
+    filter: none;
+    transition: filter 0.3s ease;
+  }
+  [data-theme="light"] .footer .brand-logo {
+    /* Mismo filtro del Header: lleva el blanco a #12141e (Dark Blue) */
+    filter: invert(1) hue-rotate(220deg) brightness(0.12) saturate(2);
   }
 </style>

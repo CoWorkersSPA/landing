@@ -50,7 +50,7 @@
   --coral-800: #5a2a25;
 
   --divider: color-mix(in srgb, var(--text) 16%, transparent);
-  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font: "Magnetik", system-ui, -apple-system, "Segoe UI", sans-serif;
   --radius: 8px;
   --radius-lg: 14px;
   --container: 1200px;

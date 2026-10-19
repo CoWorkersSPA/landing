@@ -1,12 +1,11 @@
 ---
 // src/components/ui/Intro.astro
 // Apertura: telón índigo con grano que muestra el wordmark y se levanta para revelar el hero.
-// Dura 0,75 s en total (antes 2,45 s). Es lo único que se interpone entre una visita nueva y la
+// Dura 0,75 s × --k en total (con --k: 1.6 ≈ 1,2 s). Es lo único que se interpone entre una visita nueva y la
 // propuesta de valor, así que el presupuesto es corto a propósito: se lee como apertura, no como
 // espera. Si se alarga otra vez, se paga en rebote de tráfico frío.
 // Se activa solo si <html> lleva data-intro (lo decide un script inline en Layout.astro:
 // una vez por sesión y nunca con prefers-reduced-motion). Sin el atributo no existe.
-import Wordmark from "@components/ui/Wordmark.astro";
 ---
 
 <div class="intro" id="intro" aria-hidden="true">
@@ -14,7 +13,15 @@ import Wordmark from "@components/ui/Wordmark.astro";
   <span class="intro-aurora intro-aurora-b"></span>
   <span class="intro-dots"></span>
   <div class="intro-inner">
-    <Wordmark height={44} />
+    <img
+      src="/coworkers_logo_vector.svg"
+      alt="Coworkers"
+      class="intro-logo"
+      width="220"
+      height="44"
+      loading="eager"
+      decoding="async"
+    />
     <p>Software que se entiende.</p>
   </div>
 </div>
@@ -28,6 +35,8 @@ import Wordmark from "@components/ui/Wordmark.astro";
   }
 
   .intro {
+    /* Multiplicador de tiempo: 1 = 0,75 s · 1.6 ≈ 1,2 s · 2 = 1,5 s */
+    --k: 1.6;
     position: fixed;
     inset: 0;
     z-index: var(--z-intro);
@@ -37,7 +46,8 @@ import Wordmark from "@components/ui/Wordmark.astro";
     overflow: hidden;
     isolation: isolate;
     clip-path: inset(0 0 0 0);
-    animation: intro-lift 0.4s cubic-bezier(0.76, 0, 0.24, 1) 0.35s forwards;
+    animation: intro-lift calc(0.4s * var(--k)) cubic-bezier(0.76, 0, 0.24, 1)
+      calc(0.35s * var(--k)) forwards;
   }
   .intro::after {
     /* el mismo grano de la página, más presente: el telón es materia, no un plano */
@@ -71,7 +81,7 @@ import Wordmark from "@components/ui/Wordmark.astro";
       color-mix(in srgb, var(--section-ghost) 40%, transparent) 55%,
       transparent 100%
     );
-    animation: intro-aurora 0.75s ease-out both;
+    animation: intro-aurora calc(0.75s * var(--k)) ease-out both;
   }
   .intro-aurora-b {
     width: 60vw;
@@ -84,7 +94,7 @@ import Wordmark from "@components/ui/Wordmark.astro";
       color-mix(in srgb, var(--coral) 16%, transparent) 55%,
       transparent 100%
     );
-    animation: intro-aurora 0.75s ease-out 0.05s both;
+    animation: intro-aurora calc(0.75s * var(--k)) ease-out calc(0.05s * var(--k)) both;
   }
   .intro-dots {
     /* partículas: puntos de acento dispersos que suben lentamente */
@@ -109,7 +119,7 @@ import Wordmark from "@components/ui/Wordmark.astro";
       40px 60px,
       120px 20px;
     opacity: 0.55;
-    animation: intro-dots 0.75s linear both;
+    animation: intro-dots calc(0.75s * var(--k)) linear both;
   }
   .intro-inner {
     display: grid;
@@ -119,12 +129,18 @@ import Wordmark from "@components/ui/Wordmark.astro";
     transform: translateY(14px);
     filter: blur(8px);
     animation:
-      intro-in 0.3s var(--ease) 0.05s forwards,
-      intro-out 0.2s var(--ease) 0.3s forwards;
+      intro-in calc(0.3s * var(--k)) var(--ease) calc(0.05s * var(--k)) forwards,
+      intro-out calc(0.2s * var(--k)) var(--ease) calc(0.3s * var(--k)) forwards;
   }
-  .intro-inner :global(svg) {
+  .intro-logo {
     height: 44px;
     width: auto;
+    filter: none;
+    transition: filter 0.3s ease;
+  }
+  :global([data-theme="light"]) .intro-logo {
+    /* Igual que .brand-logo en Header.astro: blanco → Dark Blue #12141e */
+    filter: invert(1) hue-rotate(220deg) brightness(0.12) saturate(2);
   }
   .intro-inner p {
     margin: 0;
@@ -172,8 +188,8 @@ import Wordmark from "@components/ui/Wordmark.astro";
   }
 
   @media (max-width: 767px) {
-    .intro-inner :global(svg) {
-      height: 36px;
+    .intro-logo {
+      height: 32px;
     }
   }
 </style>
@@ -194,7 +210,7 @@ import Wordmark from "@components/ui/Wordmark.astro";
     intro.addEventListener("animationend", (e) => {
       if (e.animationName === "intro-lift") done();
     });
-    setTimeout(done, 1200); // respaldo por si el evento no llega
+    setTimeout(done, 2500); // respaldo: debe ser mayor que 0,75 s × --k
   } else {
     intro?.remove();
   }

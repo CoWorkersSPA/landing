@@ -175,13 +175,8 @@ const jsonLd = {
         }
       } catch (e) {}
     </script>
-    {/* Producción: auto-hospedar Inter con @font-face + font-display: swap. */}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    {/* Tipografía de marca: Magnetik. Hospedar los archivos en public/fonts/ y declarar
+         @font-face (con font-display: swap) en global.css antes de que se use --font. */}
     {/* Íconos: Phosphor (el set que fija Nocturne). */}
     <link
       rel="stylesheet"
