@@ -5,7 +5,7 @@
 Coworkers SpA tiene dos capas:
 
 - **Coworkers.cl** (corporativa): desarrollo a medida, automatizaciones e infraestructura para pymes y compradores técnicos. El equipo son cinco socios de Ingeniería en Informática de la Universidad Técnica Federico Santa María y estudiantes universitarios de Concepción a los que forman, revisan y pagan por cada entrega aceptada.
-- **Mesón, de Coworkers.cl**: la línea de soluciones para la pyme que atiende en el mostrador. Una tablet que se usa con el dedo, sin manual, instalada en persona. Soluciones: Mesón Datos (auditoría y cumplimiento de la Ley 21.719 de datos personales, vigente desde el 1 de diciembre de 2026), Mesón Cobros (cobranza automática por WhatsApp y correo) y cotizaciones para ferreterías y distribuidoras.
+- **Central, de Coworkers.cl**: la línea de soluciones para la pyme que atiende en el mostrador. Una tablet que se usa con el dedo, sin manual, instalada en persona. Soluciones: Central Datos (auditoría y cumplimiento de la Ley 21.719 de datos personales, vigente desde el 1 de diciembre de 2026), Central Cobros (cobranza automática por WhatsApp y correo) y cotizaciones para ferreterías y distribuidoras.
 
 ## Lo que se instala
 
@@ -42,7 +42,7 @@ La página muestra capturas reales de lo que Coworkers.cl instala, con una empre
 
 ## Páginas
 
-- [Inicio](https://coworkers.cl/): servicios, Mesón, capturas de lo que se instala, cómo trabajan, compromisos, equipo y contacto.
+- [Inicio](https://coworkers.cl/): servicios, Central, capturas de lo que se instala, cómo trabajan, compromisos, equipo y contacto.
 
 ## Lo que no es
 

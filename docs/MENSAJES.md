@@ -1,6 +1,6 @@
 # Coworkers.cl · Marco de mensajes para la landing corporativa
 
-Derivado de _Estrategia de marca - Coworkers.cl y Mesón_ (v1.0, 19 sep 2026) y _Investigación de mercado - Módulos y servicios Mesón_ (v1.0, 19 sep 2026). Todo lo que no salga de esos dos documentos se marca como propuesta.
+Derivado de _Estrategia de marca - Coworkers.cl y Central_ (v1.0, 19 sep 2026) y _Investigación de mercado - Módulos y servicios Central_ (v1.0, 19 sep 2026). Todo lo que no salga de esos dos documentos se marca como propuesta.
 
 Revisado el 24 de septiembre de 2026 tras una auditoría de marketing de la landing. El cambio de fondo está en la sección 04: el sistema rotativo del hero se mantiene como mecanismo, pero cambia de sujeto. Los cambios de esa revisión van marcados **[rev. 24 sep]**.
 
@@ -20,7 +20,7 @@ Resolvemos problemas de gestión en pymes que hoy funcionan con cuaderno, WhatsA
 | --------------------------------- | ----------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Software que se entiende.**     | Marca       | Funcional    | **Recomendada como tagline de marca.** Nombra el posicionamiento (simple y completo) sin adjetivos. Va en logo, pie, bio.                                                               |
 | Tu proyecto, su carrera.          | Corporativa | Emocional    | **[rev. 24 sep]** Sale del hero: hablaba del modelo, no del cliente. Sigue sirviendo para reclutamiento y para hablar con la universidad. Como tagline única es débil. No va en el pie. |
-| Tu negocio, a la mano.            | Mesón       | Aspiracional | Correcta para la línea. No usarla en la corporativa salvo en la tarjeta de Mesón.                                                                                                       |
+| Tu negocio, a la mano.            | Central       | Aspiracional | Correcta para la línea. No usarla en la corporativa salvo en la tarjeta de Central.                                                                                                       |
 | Tuyo. Aunque nosotros no estemos. | Campaña     | Atrevida     | La más fuerte y la única bloqueada: la estrategia (sección 07) exige la cláusula de entrega de código antes de publicarla. **No va en la página hasta que exista el contrato.**         |
 | Se entiende. Se usa. Es tuyo.     | Reserva     | Funcional    | Buen cierre de página. Propuesta: usarla cuando se desbloquee "es tuyo".                                                                                                                |
 
@@ -79,7 +79,7 @@ Fuera del banco: morosidad de Duemint, inasistencia de proveedores de agendas, "
 | Canal               | Titular                                                                                  | Tono                                | Extensión |
 | ------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------- | --------- |
 | Landing corporativa | Rotativo "Tu pyme, …" con el resultado + apoyo con el cómo y el equipo                   | Directo, joven, sin humo            | Corta     |
-| Landing de Mesón    | "Tuyo. Aunque nosotros no estemos." (cuando exista la cláusula) + una solución con fecha | Claro, cálido, cero jerga           | Corta     |
+| Landing de Central    | "Tuyo. Aunque nosotros no estemos." (cuando exista la cláusula) + una solución con fecha | Claro, cálido, cero jerga           | Corta     |
 | Bio de redes        | "Software que se entiende. Concepción."                                                  | Sobrio                              | Muy corta |
 | Correo al contador  | Asunto con la ley y la fecha; precio fijo y plazo                                        | Profesional, concreto               | Corta     |
 | Propuesta / deck    | Problema → solución → qué incluye → precio → quién revisa                                | Formal en proceso, cercano en trato | Media     |
@@ -94,7 +94,7 @@ Fuera del banco: morosidad de Duemint, inasistencia de proveedores de agendas, "
 - **Confusión con otros:** software factory, agencia digital, coworking, plataforma, suscripción por módulo.
 - **Contra el posicionamiento:** "mano de obra barata"; "fácil de aprender" (no se aprende, se usa); un costo mensual cerrado que incluya WhatsApp; "el cliente nunca ve el motor".
 - **Promesas sin contrato:** "Tuyo. Aunque nosotros no estemos." y "está en el contrato" esperan la cláusula de entrega de código. "Nunca se apaga" solo aplica al modo "con nosotros" y debe decirlo.
-- **Mesón Caja como disponible.** La investigación la deja en "construir, no vender aún": en la corporativa se menciona Datos, Cobros y Cotiza; Caja no se promete.
+- **Central Caja como disponible.** La investigación la deja en "construir, no vender aún": en la corporativa se menciona Datos, Cobros y Cotiza; Caja no se promete.
 
 ---
 
@@ -104,7 +104,7 @@ Fuera del banco: morosidad de Duemint, inasistencia de proveedores de agendas, "
 | ------------------------------------ | ------------------------------------------------------------------------------------ |
 | `Hero`                               | Titular rotativo "Tu pyme, …" con el resultado + apoyo con el cómo y el equipo       |
 | `PainFacts`                          | Dos hechos con fecha (Ley 21.719 y 40 días) + puente al cierre                       |
-| `TwoDoors`                           | Mesón primero, con Datos y Cobros (Caja no se promete), y las tres líneas después    |
+| `TwoDoors`                           | Central primero, con Datos y Cobros (Caja no se promete), y las tres líneas después    |
 | `HowWeWork`                          | Treinta minutos en tu local → tareas chicas → revisión → instalación y mantención    |
 | `Guarantees`                         | Los cuatro pilares de la estrategia                                                  |
 | `Team`                               | Historia corta (versión "home o pitch") + "estamos partiendo" + puerta a estudiantes |

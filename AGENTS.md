@@ -2,11 +2,11 @@
 
 ## Contexto del proyecto
 
-Landing corporativa de **Coworkers.cl**, una empresa de software para pymes con sede en Concepción, Chile, construida con talento universitario. Tiene dos capas: **Coworkers.cl** (servicios: desarrollo a medida, automatizaciones, infraestructura; talento y reclutamiento) y **Mesón, de Coworkers.cl** (la línea de soluciones para pymes: Datos, Cobros, cotizaciones). El equipo son cinco socios de Ingeniería en Informática de la UTFSM y estudiantes de Concepción a los que forman, revisan y pagan por entrega.
+Landing corporativa de **Coworkers.cl**, una empresa de software para pymes con sede en Concepción, Chile, construida con talento universitario. Tiene dos capas: **Coworkers.cl** (servicios: desarrollo a medida, automatizaciones, infraestructura; talento y reclutamiento) y **Central, de Coworkers.cl** (la línea de soluciones para pymes: Datos, Cobros, cotizaciones). El equipo son cinco socios de Ingeniería en Informática de la UTFSM y estudiantes de Concepción a los que forman, revisan y pagan por entrega.
 
-Este repositorio contiene únicamente la landing pública: presenta las dos puertas, explica cómo trabajan e invita a agendar una reunión inicial sin costo. No es la plataforma del producto ni la página de Mesón.
+Este repositorio contiene únicamente la landing pública: presenta las dos puertas, explica cómo trabajan e invita a agendar una reunión inicial sin costo. No es la plataforma del producto ni la página de Central.
 
-**Fuente de verdad del contenido**: `docs/MENSAJES.md` (marco de mensajes), derivado de _Estrategia de marca - Coworkers.cl y Mesón_ e _Investigación de mercado - Módulos y servicios Mesón_ (ambos del 19 de septiembre de 2026). El mockup antiguo (`UI_mockups_para_Coworkers_cl.pdf`) queda deprecado para el copy; solo sirve como referencia visual. Cualquier cambio de copy debe respetar `docs/MENSAJES.md`, en especial la sección "Lo que no se dice".
+**Fuente de verdad del contenido**: `docs/MENSAJES.md` (marco de mensajes), derivado de _Estrategia de marca - Coworkers.cl y Central_ e _Investigación de mercado - Módulos y servicios Central_ (ambos del 19 de septiembre de 2026). El mockup antiguo (`UI_mockups_para_Coworkers_cl.pdf`) queda deprecado para el copy; solo sirve como referencia visual. Cualquier cambio de copy debe respetar `docs/MENSAJES.md`, en especial la sección "Lo que no se dice".
 
 ## Stack
 
@@ -29,7 +29,7 @@ Orden de secciones en `index.astro`, de arriba a abajo:
 
 1. `Hero` — titular rotativo "Tu proyecto…" a gran escala + el problema (cobrar, cumplir, ordenar). Sin foto hasta que exista una propia (tablet en un mostrador); una de archivo aquí es una prueba falsa
 2. `PainFacts` — "Nos llaman cuando": 1 de diciembre y 40 días, con fuente, sobre la banda índigo
-3. `TwoDoors` — servicios de Coworkers.cl (lista con reglas) + tarjeta de Mesón con foto
+3. `TwoDoors` — servicios de Coworkers.cl (lista con reglas) + tarjeta de Central con foto
 4. `ProductShowcase` — "Así se ve lo que instalamos": carrusel de capturas reales (`public/img/productos/`). Una lámina sin su archivo no sale en el build; sin ninguna, la sección desaparece. Las capturas no muestran nombres ni logos del motor
 5. `HowWeWork` — "Cuatro pasos. Ningún manual.", cuatro pasos sobre una línea
 6. `Guarantees` — "Lo que puedes exigirnos": los cuatro pilares en 2×2
@@ -49,7 +49,7 @@ Sistema **Nocturne** (`UI Palette Coworkers.cl.pdf`). El **oscuro es el tema de 
 
 - Fondo `#161826`, texto `#e9e9ed`, un solo acento blurple `#9184d9` usado como línea, marca y resplandor, nunca como relleno grande. Rampas neutra y de acento 100–900 en `global.css`.
 - Una sola banda saturada por página (`#262a60`, la de "Nos llaman cuando"). El resto de los fondos se mantiene desaturado.
-- Paleta índigo + coral con el violeta como marca (proporción 60-30-10). El índigo (`--section`, `--section-ghost`) es la atmósfera: domina las luces de fondo. `--accent` violeta es marca y acción (nav, botones, íconos, palabras destacadas). `--coral` `#d1746a` es el único secundario y la luz cálida de la página: resplandores de cada sección, la línea y puntos de "Cómo trabajamos", la tarjeta de Mesón, el contador de la banda. Nunca en botones de contorno ni en títulos. Siempre plano, sin degradados ni halos.
+- Paleta índigo + coral con el violeta como marca (proporción 60-30-10). El índigo (`--section`, `--section-ghost`) es la atmósfera: domina las luces de fondo. `--accent` violeta es marca y acción (nav, botones, íconos, palabras destacadas). `--coral` `#d1746a` es el único secundario y la luz cálida de la página: resplandores de cada sección, la línea y puntos de "Cómo trabajamos", la tarjeta de Central, el contador de la banda. Nunca en botones de contorno ni en títulos. Siempre plano, sin degradados ni halos.
 - Inter, peso 500 en títulos; la jerarquía es por tamaño y espacio, no por peso.
 - Botones de contorno (borde en acento), nunca rellenos. Radio 8px en botones, 14px en imágenes; nada más redondeado.
 - Reglas que se desvanecen en los extremos (`.rule`) en vez de líneas que cortan.
@@ -61,7 +61,7 @@ Sistema **Nocturne** (`UI Palette Coworkers.cl.pdf`). El **oscuro es el tema de 
 - La banda índigo se funde con el fondo por arriba y por abajo; no corta.
 - Apertura (`ui/Intro.astro`): telón índigo con grano y partículas que muestra el wordmark y se levanta (2,3 s). Se activa con `data-intro` en `<html>`, que un script inline de `Layout.astro` pone solo una vez por sesión (`sessionStorage`) y nunca con `prefers-reduced-motion`. Mientras está arriba, el hero espera; al retirarse entra en cascada.
 - Un solo momento cinematográfico: la banda "Fechas clave" (cifras fantasma en contorno que se desplazan con `animation-timeline: view()`, el 40 que cuenta al entrar y los días que faltan para el 1 de diciembre calculados en el navegador). No repetir el recurso en otras secciones.
-- Movimiento: revelado al hacer scroll con `IntersectionObserver` (`.reveal` / `.in`, con desenfoque), titular rotativo en el hero, línea de pasos que se dibuja al aparecer, sección activa en el nav, spotlight que sigue al puntero en la tarjeta de Mesón (`pointermove`), hover con luz en botones, servicios y garantías, anillo que gira lento en el hero y una luz tenue que sigue al cursor en toda la página (`pointermove`, una actualización por frame). Todo respeta `prefers-reduced-motion` y se desactiva sin puntero fino (`hover: none`).
+- Movimiento: revelado al hacer scroll con `IntersectionObserver` (`.reveal` / `.in`, con desenfoque), titular rotativo en el hero, línea de pasos que se dibuja al aparecer, sección activa en el nav, spotlight que sigue al puntero en la tarjeta de Central (`pointermove`), hover con luz en botones, servicios y garantías, anillo que gira lento en el hero y una luz tenue que sigue al cursor en toda la página (`pointermove`, una actualización por frame). Todo respeta `prefers-reduced-motion` y se desactiva sin puntero fino (`hover: none`).
 - Máximo dos antetítulos (`Eyebrow`) en toda la página. Cero guiones largos. Cero puntos medios como separador en texto visible.
 
 ## Legibilidad para buscadores y asistentes de IA
@@ -82,7 +82,7 @@ Sistema **Nocturne** (`UI Palette Coworkers.cl.pdf`). El **oscuro es el tema de 
 - No agregar apps móviles, dashboards ni nada fuera del alcance de "landing page pública".
 - No inventar casos de éxito, testimonios de clientes ni métricas. La única cifra publicable es la que tiene fuente citada en `docs/MENSAJES.md`.
 - No nombrar herramientas ni tecnologías (ERPNext, Frappe, Nextcloud, Authentik, n8n, Astro) en ningún texto visible. La pyme compra el problema resuelto, no el motor.
-- No prometer Mesón Caja como disponible ni usar "Tuyo. Aunque nosotros no estemos." mientras no exista la cláusula contractual de entrega de código (estrategia, sección 07).
+- No prometer Central Caja como disponible ni usar "Tuyo. Aunque nosotros no estemos." mientras no exista la cláusula contractual de entrega de código (estrategia, sección 07).
 - No publicar lenguaje de estrategia interna ("lo que no somos", bancos de pruebas, cifras de madurez digital). Si el cliente no lo necesita para decidir, no va.
 - No usar guiones largos (`—`) en texto visible.
 - No usar `window.addEventListener("scroll")`: para reaccionar al scroll se usa `IntersectionObserver` (ver `Header.astro`).
