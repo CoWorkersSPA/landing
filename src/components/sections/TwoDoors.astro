@@ -1,7 +1,5 @@
+
 ---
-// src/components/sections/TwoDoors.astro
-// Dos puertas, una empresa: los servicios de Coworkers.cl (el problema antes que la pieza,
-// sin nombrar herramientas) y Mesón, la línea para la pyme que atiende en el mostrador.
 import Button from "@components/ui/Button.astro";
 import Eyebrow from "@components/ui/Eyebrow.astro";
 import { mailto } from "../../config";
@@ -9,44 +7,52 @@ import { mailto } from "../../config";
 const services = [
   {
     icon: "ph-code",
-    title: "Lo que ningún sistema trae",
+    title: "Software que se adapta a tu trabajo",
     description:
-      "Un lugar donde tus clientes vean en qué va su pedido, una pantalla hecha para cómo trabajas tú, un sitio que además hace algo. Lo que se compra hecho no siempre calza.",
-    tags: ["Pantallas internas", "Portal para tus clientes", "Sitios"],
+      "Un portal para tus clientes, una pantalla interna o un sitio que hace algo más que mostrar información. Construimos lo que tu negocio necesita cuando una solución estándar no basta.",
+    tags: ["Software a medida", "Portales", "Sitios web"],
   },
   {
     icon: "ph-arrows-clockwise",
-    title: "Lo que hoy alguien hace a mano",
+    title: "Automatización de procesos",
     description:
-      "Cobranza que recuerda sola, citas que se confirman, el reporte del lunes y documentos que se leen sin que nadie los transcriba. Corren en servidores propios: sin costo por ejecución.",
-    tags: ["Cobranza", "Citas", "Reportes", "Lectura de documentos"],
+      "Cobranza que recuerda sola, citas que se confirman, reportes que se preparan y documentos que se procesan sin transcribirlos a mano. Menos tareas repetitivas, más tiempo para trabajar.",
+    tags: ["Cobranza", "Citas", "Reportes", "Documentos"],
   },
   {
-    icon: "ph-hard-drives",
-    title: "Correo, nube y una sola clave",
+    icon: "ph-plugs-connected",
+    title: "Integraciones que conectan tus sistemas",
     description:
-      "Correo con el nombre de tu empresa, nube para tus archivos y una sola clave para todo. Va incluida en cada proyecto, no se vende por pieza. Lo que te ofrecemos es lo mismo que usamos nosotros.",
-    tags: ["Correo", "Nube", "Acceso único", "Dominio"],
+      "Conectamos las herramientas que ya utilizas para que compartan información y trabajen juntas. Menos datos duplicados, menos pasos manuales y procesos que fluyen de principio a fin.",
+    tags: ["Integraciones", "Sincronización", "Flujos de trabajo"],
   },
 ];
 
-// TODO: cuando exista la página de Mesón (meson.coworkers.cl o /meson), volver a "Conocer Mesón" apuntando ahí.
-// Mientras tanto el botón no puede ser un enlace muerto: pregunta por correo, con asunto propio.
-const MESON_HREF = mailto("Quiero saber más de Mesón");
+// Mientras la página de Central no esté disponible,
+// el botón permite solicitar información por correo.
+const CENTRAL_HREF = mailto("Quiero saber más de Central by Coworkers");
 ---
 
 <section class="section" id="servicios">
   <div class="container">
     <Eyebrow text="Dos puertas, una empresa" class="reveal" />
+
     <h2 class="section-title reveal">
-      Si atiendes en un mostrador, empieza por Mesón. Si ya sabes qué necesitas,
-      hablemos del proyecto.
+      Una base que funciona. Soluciones que se adaptan.
     </h2>
 
+    <p class="section-intro reveal">
+      Central reúne las herramientas que tu empresa necesita para trabajar
+      conectada. Y cuando necesitas algo más, en Coworkers construimos lo que
+      falta.
+    </p>
+
     <div class="doors">
-      <aside class="meson reveal" id="meson" data-spotlight>
-        {/* PROVISIONAL — foto de archivo (Unsplash vía Picsum) hasta la sesión propia: una tablet
-            en un mostrador de Concepción. Reemplazar el archivo y borrar este comentario. */}
+      <aside class="central reveal" id="central" data-spotlight>
+        <!--
+          Imagen provisional. Mantener la ruta actual hasta disponer
+          de una fotografía propia alineada con la identidad de Central.
+        -->
         <img
           src="/img/meson-mostrador.jpg"
           width="1000"
@@ -54,32 +60,56 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
           alt=""
           loading="lazy"
         />
-        <p class="kicker">Mesón, de Coworkers.cl</p>
+
+        <p class="kicker">Central by Coworkers</p>
+
         <h3>
-          Tu negocio, <em>a la mano.</em>
+          Tu trabajo, <em>conectado.</em>
         </h3>
+
         <p>
-          Una tablet en tu mostrador. Cobra sola las facturas atrasadas, te deja
-          en regla para el 1 de diciembre y arma una cotización sin llamar al
-          proveedor. Se usa con el dedo. La instalamos nosotros.
+          Correo con el nombre de tu empresa, archivos y documentos en la
+          nube, herramientas de gestión y una sola identidad para acceder.
+          Servicios que funcionan por separado, pero están pensados para
+          trabajar juntos.
         </p>
-        <Button href={MESON_HREF} icon="ph-arrow-right">
-          Preguntar por Mesón
+
+        <p>
+          Empieza con lo que necesitas hoy y amplía las capacidades a medida
+          que tu negocio crece. Y si necesitas algo específico, podemos
+          construirlo e integrarlo.
+        </p>
+
+        <Button href={CENTRAL_HREF} icon="ph-arrow-right">
+          Conocer Central
         </Button>
       </aside>
 
       <div class="services">
-        {services.map((s, i) => (
+        <div class="services-intro reveal">
+          <p class="services-kicker">Desarrollo e integración</p>
+          <h3>Lo que tu negocio necesita y ningún sistema resuelve por sí solo.</h3>
+          <p>
+            No tienes que cambiar tu manera de trabajar para encajar en un
+            sistema. Analizamos tus procesos y construimos soluciones que
+            responden a tus necesidades, conectadas con las herramientas que
+            ya utilizas cuando tiene sentido.
+          </p>
+        </div>
+
+        {services.map((service, i) => (
           <article class="service reveal" data-delay={i}>
             <span class="icon-tile" aria-hidden="true">
-              <i class={`ph ${s.icon}`}></i>
+              <i class={`ph ${service.icon}`}></i>
             </span>
+
             <div>
-              <h3>{s.title}</h3>
-              <p>{s.description}</p>
+              <h4>{service.title}</h4>
+              <p>{service.description}</p>
+
               <div class="what">
-                {s.tags.map((t) => (
-                  <span>{t}</span>
+                {service.tags.map((tag) => (
+                  <span>{tag}</span>
                 ))}
               </div>
             </div>
@@ -94,6 +124,13 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
   h2.section-title {
     max-width: 30ch;
   }
+
+  .section-intro {
+    max-width: 62ch;
+    color: var(--n-400);
+    margin-top: 16px;
+  }
+
   .doors {
     display: grid;
     grid-template-columns: 6fr 6fr;
@@ -101,12 +138,38 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
     margin-top: 48px;
     align-items: stretch;
   }
+
   .services {
     display: flex;
     flex-direction: column;
   }
 
-  /* Cada servicio es una fila que se enciende al pasar: fondo tintado, tile del ícono elevado. */
+  .services-intro {
+    padding: 0 0 24px;
+  }
+
+  .services-kicker {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--coral-300);
+    margin-bottom: 12px;
+  }
+
+  .services-intro h3 {
+    font-size: 25px;
+    line-height: 1.2;
+    max-width: 28ch;
+    margin-bottom: 12px;
+  }
+
+  .services-intro > p:last-child {
+    color: var(--n-400);
+    max-width: 54ch;
+  }
+
+  /* Filas de servicios */
+
   .service {
     position: relative;
     display: grid;
@@ -121,9 +184,11 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
       background-color 0.4s var(--ease),
       transform 0.4s var(--ease);
   }
+
   .service:last-child {
     border-bottom: 1px solid var(--divider);
   }
+
   .service::before {
     content: "";
     position: absolute;
@@ -138,29 +203,41 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
     opacity: 0;
     transition: opacity 0.4s var(--ease);
   }
+
   .service:hover {
     background: color-mix(in srgb, var(--surface) 50%, transparent);
     transform: translateX(4px);
   }
+
   .service:hover::before {
     opacity: 1;
   }
+
   .service:hover .icon-tile {
     transform: translateY(-2px);
     color: var(--a-200);
     box-shadow: var(--shadow-glow);
   }
+
   .service .icon-tile {
     margin-top: 2px;
+    transition:
+      transform 0.4s var(--ease),
+      color 0.4s var(--ease),
+      box-shadow 0.4s var(--ease);
   }
-  .service h3 {
-    font-size: 22px;
+
+  .service h4 {
+    font-size: 20px;
+    line-height: 1.25;
     margin-bottom: 8px;
   }
+
   .service p {
     color: var(--n-400);
     max-width: 54ch;
   }
+
   .what {
     display: flex;
     flex-wrap: wrap;
@@ -168,6 +245,7 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
     margin-top: 16px;
     font-size: 13px;
   }
+
   .what span {
     padding: 4px 10px;
     border-radius: 6px;
@@ -180,6 +258,7 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
       background-color 0.3s var(--ease),
       box-shadow 0.3s var(--ease);
   }
+
   .service:hover .what span {
     color: var(--a-300);
     background: color-mix(in srgb, var(--accent) 10%, transparent);
@@ -187,10 +266,12 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
       color-mix(in srgb, var(--accent) 30%, transparent);
   }
 
-  /* Mesón: tarjeta con foto, borde que sigue al cursor y sombra tintada. */
-  .meson {
+  /* Tarjeta de Central */
+
+  .central {
     --mx: 50%;
     --my: 50%;
+
     position: relative;
     overflow: hidden;
     isolation: isolate;
@@ -206,7 +287,8 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
       transform 0.6s var(--ease),
       box-shadow 0.6s var(--ease);
   }
-  .meson img {
+
+  .central img {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -217,18 +299,22 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
       transform 1.2s var(--ease),
       opacity 0.6s var(--ease);
   }
-  .meson:hover img {
+
+  .central:hover img {
     transform: scale(1.04);
     opacity: 0.7;
   }
-  .meson:hover {
+
+  .central:hover {
     transform: translateY(-4px);
     box-shadow:
       0 30px 70px -28px var(--shadow-tint),
       0 0 0 1px color-mix(in srgb, var(--coral) 32%, transparent);
   }
-  .meson::before {
-    /* foco de luz bajo el cursor */
+
+  /* Foco de luz bajo el cursor */
+
+  .central::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -242,10 +328,12 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
     opacity: 0;
     transition: opacity 0.5s var(--ease);
   }
-  .meson:hover::before {
+
+  .central:hover::before {
     opacity: 1;
   }
-  .meson::after {
+
+  .central::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -261,8 +349,10 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
         transparent 70%
       );
   }
-  .meson :global(.edge) {
-    /* borde luminoso que sigue al cursor */
+
+  /* Borde luminoso que sigue al cursor */
+
+  .central :global(.edge) {
     position: absolute;
     inset: 0;
     border-radius: inherit;
@@ -286,81 +376,121 @@ const MESON_HREF = mailto("Quiero saber más de Mesón");
     opacity: 0;
     transition: opacity 0.5s var(--ease);
   }
-  .meson:hover :global(.edge) {
+
+  .central:hover :global(.edge) {
     opacity: 1;
   }
-  .meson > :global(:not(img):not(.edge)) {
+
+  .central > :global(:not(img):not(.edge)) {
     position: relative;
     z-index: 1;
-  } /* sobre el degradado, dentro del contexto aislado */
+  }
+
   .kicker {
     font-size: 14px;
     color: var(--coral-300);
     margin-bottom: 10px;
   }
-  .meson h3 {
+
+  .central h3 {
     font-size: 32px;
     line-height: 1.1;
   }
-  .meson h3 em {
+
+  .central h3 em {
     font-style: italic;
     color: var(--coral-300);
   }
-  .meson p:not(.kicker) {
+
+  .central p:not(.kicker) {
     color: var(--a-200);
     margin-top: 12px;
     max-width: 40ch;
   }
-  /* El botón de Mesón lleva el coral como tinta suave: sin borde, fondo al 14%, texto claro.
-     Deja a "Agendar 30 min" como único botón de contorno con acento: la jerarquía se mantiene. */
-  .meson :global(.btn) {
+
+  .central :global(.btn) {
     margin-top: 24px;
     align-self: flex-start;
     border-color: transparent;
     color: var(--coral-200);
     background: color-mix(in srgb, var(--coral) 14%, transparent);
   }
-  .meson :global(.btn:hover) {
+
+  .central :global(.btn:hover) {
     color: var(--coral-200);
     border-color: transparent;
     background: color-mix(in srgb, var(--coral) 24%, transparent);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--coral) 8%, transparent);
   }
-  .meson :global(.btn:active) {
+
+  .central :global(.btn:active) {
     background: color-mix(in srgb, var(--coral) 32%, transparent);
   }
+
   @media (max-width: 1023px) {
     .doors {
       grid-template-columns: 1fr;
     }
-    .meson {
+
+    .central {
       min-height: 420px;
     }
+
     .service {
       padding-inline: 16px;
       margin-inline: -16px;
     }
   }
+
   @media (hover: none) {
     .service:hover {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .service,
+    .service::before,
+    .service .icon-tile,
+    .what span,
+    .central,
+    .central img,
+    .central::before,
+    .central :global(.edge) {
+      transition: none;
+    }
+
+    .service:hover,
+    .central:hover {
+      transform: none;
+    }
+
+    .central:hover img {
       transform: none;
     }
   }
 </style>
 
 <script>
-  // Spotlight: el borde y el foco siguen al puntero (pointermove, no scroll).
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  document.querySelectorAll<HTMLElement>("[data-spotlight]").forEach((card) => {
-    const edge = document.createElement("span");
-    edge.className = "edge";
-    edge.setAttribute("aria-hidden", "true");
-    card.appendChild(edge);
-    if (reduce) return;
-    card.addEventListener("pointermove", (e) => {
-      const r = card.getBoundingClientRect();
-      card.style.setProperty("--mx", `${e.clientX - r.left}px`);
-      card.style.setProperty("--my", `${e.clientY - r.top}px`);
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  document
+    .querySelectorAll<HTMLElement>("[data-spotlight]")
+    .forEach((card) => {
+      const edge = document.createElement("span");
+      edge.className = "edge";
+      edge.setAttribute("aria-hidden", "true");
+      card.appendChild(edge);
+
+      if (reduceMotion) return;
+
+      card.addEventListener("pointermove", (event) => {
+        const rect = card.getBoundingClientRect();
+
+        card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+        card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+      });
     });
-  });
 </script>

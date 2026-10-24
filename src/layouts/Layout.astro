@@ -1,28 +1,29 @@
 ---
-// src/layouts/Layout.astro
 import "@styles/global.css";
 import Intro from "@components/ui/Intro.astro";
 
 interface Props {
   title?: string;
   description?: string;
-  /** Fuera del índice de buscadores. Para páginas sin contenido definitivo. */
   noindex?: boolean;
+  ogImage?: string;
+  ogSiteName?: string;
 }
 
 const {
   title = "Coworkers.cl · Software que se entiende",
-  description = "Resolvemos un problema concreto de tu pyme, cobrar, cumplir, ordenar, con software que se entiende y es tuyo. Construido en Concepción por un equipo universitario que formamos, revisamos y pagamos por entrega.",
+  description =
+    "Software, automatizaciones e integraciones para pymes. En Coworkers construimos soluciones para resolver problemas concretos del negocio, con tecnología que se entiende y se adapta a tu forma de trabajar.",
   noindex = false,
+  ogImage: ogImagePath = "/og-image.png",
+  ogSiteName = "Coworkers.cl",
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site);
-// Imagen al compartir el enlace (WhatsApp, LinkedIn, Slack...). Sin ella, cada app usa el favicon.
-// Se genera fuera del repo a partir de los tokens de marca; 1200×630 es la proporción que todas
-// muestran como vista grande.
-const ogImage = new URL("/og-image.png", Astro.site);
+const siteUrl = Astro.site ?? Astro.url;
+const canonical = new URL(Astro.url.pathname, siteUrl);
+const ogImage = new URL(ogImagePath, siteUrl);
 
-// Datos estructurados: quién es la empresa, para buscadores y asistentes de IA.
+// Organización principal: Coworkers.
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -33,7 +34,7 @@ const jsonLd = {
   logo: "https://coworkers.cl/favicon-512.png",
   slogan: "Software que se entiende.",
   description:
-    "Empresa de software para pymes en Concepción, Chile. Resuelve un problema concreto del negocio (cobrar, cumplir con la ley de datos, ordenar) con software que se entiende y es del cliente, construido y revisado por un equipo universitario.",
+    "Empresa de software en Concepción, Chile. Desarrolla software a medida, automatizaciones e integraciones para resolver necesidades concretas de las pymes.",
   email: "hola@coworkers.cl",
   address: {
     "@type": "PostalAddress",
@@ -51,10 +52,14 @@ const jsonLd = {
   ],
   knowsLanguage: "es-CL",
   brand: [
-    { "@type": "Brand", name: "Coworkers.cl" },
     {
       "@type": "Brand",
-      name: "Mesón, de Coworkers.cl",
+      name: "Coworkers.cl",
+      slogan: "Software que se entiende.",
+    },
+    {
+      "@type": "Brand",
+      name: "Central by Coworkers",
       slogan: "Tu negocio, a la mano.",
     },
   ],
@@ -63,36 +68,45 @@ const jsonLd = {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
-        name: "Desarrollo a medida",
+        name: "Desarrollo de software a medida",
         description:
-          "Portales de cliente, módulos sobre el sistema de gestión y sitios con lógica propia.",
+          "Portales de clientes, módulos de gestión y sitios web con funcionalidades propias.",
       },
     },
     {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
-        name: "Automatizaciones",
+        name: "Automatización de procesos",
         description:
-          "Cobranza automática, confirmación de citas, reportes y lectura de documentos.",
+          "Automatización de tareas administrativas, reportes, comunicaciones y procesamiento de documentos.",
       },
     },
     {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
-        name: "Mesón Datos",
+        name: "Integración de sistemas",
         description:
-          "Auditoría y cumplimiento de la Ley 21.719 de datos personales.",
+          "Conexión de herramientas y sistemas para reducir tareas manuales y duplicación de datos.",
       },
     },
     {
       "@type": "Offer",
       itemOffered: {
         "@type": "Service",
-        name: "Mesón Cobros",
+        name: "Central Datos",
         description:
-          "Cobranza automática por WhatsApp y correo desde una tablet en el mostrador.",
+          "Solución orientada a la gestión de datos personales y el apoyo al cumplimiento de la Ley 21.719.",
+      },
+    },
+    {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name: "Central Cobros",
+        description:
+          "Solución para apoyar la gestión de cobranza mediante comunicaciones por WhatsApp y correo electrónico.",
       },
     },
   ],

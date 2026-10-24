@@ -6,7 +6,7 @@ Landing corporativa de **Coworkers.cl**, empresa de software para pymes en Conce
 
 ### Sobre este repositorio
 
-Este proyecto contiene el código fuente de la landing pública de Coworkers.cl: presenta las dos puertas (servicios y Mesón), explica cómo trabajan e invita a agendar una reunión inicial sin costo. El contenido sigue `docs/MENSAJES.md`.
+Este proyecto contiene el código fuente de la landing pública de Coworkers.cl: presenta las dos puertas (servicios y Central), explica cómo trabajan e invita a agendar una reunión inicial sin costo. El contenido sigue `docs/MENSAJES.md`.
 
 ### Stack
 
